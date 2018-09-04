@@ -3,8 +3,9 @@ import os, glob
 import numpy
 import mne
 from eegprep.bids.naming import filename2tuple
+from eegprep.guess import guess_montage
 
-datadir = '/data/'
+datadir = '/media/charesti-start/data/irsa-eeg/'
 bidsdir = join(datadir, 'BIDS')
 
 subjectdirs = glob.glob(join(bidsdir, 'sub-*'))
@@ -28,8 +29,8 @@ for subjectdir in subjectdirs:
         raw.set_channel_types(mapping={'EXG3': 'eog'})
         raw.filter(l_freq=0.1, h_freq=40, fir_design='firwin')
         raw.pick_types(eeg=True, eog=True)
-        biosemi64 = mne.channels.read_montage('biosemi64')
-        raw.set_montage(biosemi64)
+        montage = mne.channels.read_montage(guess_montage(raw.ch_names))
+        raw.set_montage(montage)
         raw.set_eeg_reference(ref_channels=['EXG1', 'EXG2'])
 
         ##  epoching
