@@ -9,7 +9,7 @@ From: python:3
     eegprep/preproc.py .
 
 %post
-    pip install https://api.github.com/repos/mne-tools/mne-python/zipball/master~egg=mne
+    pip install https://api.github.com/repos/mne-tools/mne-python/zipball/master#egg=mne
     pip install --no-cache-dir -r requirements.txt
 
 %runscript
