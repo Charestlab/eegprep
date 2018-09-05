@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 requires = []
 with open('requirements.txt') as reqfile:
@@ -16,7 +16,7 @@ setup(
     author='',
     author_email='',
     keywords='analysis eeg BIDS',
-    packages=find_packages(),
+    packages=['eegprep', 'eegprep.bids'],
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,

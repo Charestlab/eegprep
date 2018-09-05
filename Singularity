@@ -4,14 +4,16 @@ From: python:3
 %help
     EEGprep preprocessing container
 
+%setup
+    python setup.py sdist
+
 %files
-    requirements.txt
+    dist/eegprep-0.1.tar.gz .
     eegprep/preproc.py .
 
 %post
     pip install --no-cache-dir -U https://api.github.com/repos/mne-tools/mne-python/zipball/master#egg=mne
-    pip install --no-cache-dir -r requirements.txt
-    python setup.py develop
+    pip install eegprep-0.1.tar.gz
 
 %runscript
-    exec python preproc.py
+    exec python /preproc.py
