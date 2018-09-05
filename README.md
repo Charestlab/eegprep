@@ -1,5 +1,5 @@
 # EEGprep
-Standardized EEG preprocessing in a virtual machine image
+Standardized EEG preprocessing
 
 
 ## Singularity

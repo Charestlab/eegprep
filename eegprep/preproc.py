@@ -9,7 +9,6 @@ from eegprep.guess import guess_montage
 datadir = '/media/charesti-start/data/irsa-eeg/'
 bidsdir = join(datadir, 'BIDS')
 
-channels = pandas.read_csv('_channels.tsv', sep='\t')
 
 subjectdirs = glob.glob(join(bidsdir, 'sub-*'))
 for subjectdir in subjectdirs:
@@ -30,7 +29,7 @@ for subjectdir in subjectdirs:
 
         # Set channel types and select reference channels
         channelFile = fname.replace('eeg.set', 'channels.tsv')
-        channels = pandas.read_csv(channelFile, sep='\t')
+        channels = pandas.read_csv(channelFile, index_col='name', sep='\t')
         bids2mne = {
             'MISC': 'misc',
             'EEG': 'eeg',
@@ -39,9 +38,8 @@ for subjectdir in subjectdirs:
             'REF': 'eeg',
         }
         channels['mne'] = channels.type.replace(bids2mne)
-        mneMapping = pandas.Series(channels,mne, index=channels.name).to_dict()
-        raw.set_channel_types(mneMapping)
-        refChannels = channels[channels.type=='REF'].name
+        raw.set_channel_types(channels.mne.to_dict())
+        refChannels = channels[channels.type=='REF'].index.tolist()
 
         # Filtering
         raw.filter(l_freq=0.1, h_freq=40, fir_design='firwin')
@@ -58,8 +56,6 @@ for subjectdir in subjectdirs:
         file_epochs = mne.Epochs(raw, **epochs_params)
 
         subject_epochs[(ses, task, run)] = file_epochs
-        break
-    break
 
     taskSeg = 1
     tasks = set([k[taskSeg] for k in subject_epochs.keys()])
