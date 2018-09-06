@@ -66,7 +66,11 @@ for subjectdir in subjectdirs:
         ##  epoching
         reject = dict(eeg=180e-6, eog=100e-6) # 1e-5
         epochs_params = dict(events=events, tmin=-0.1, tmax=0.5, reject=reject)
-        file_epochs = mne.Epochs(raw, **epochs_params)
+        file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
+
+        # downsample if configured to do so
+        if config['downsample'] < raw.info['sfreq']:
+            file_epochs = file_epochs.copy().resample(config['downsample'], npad='auto')
 
         subject_epochs[(ses, task, run)] = file_epochs
 
