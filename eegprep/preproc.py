@@ -5,8 +5,21 @@ import mne
 import pandas
 from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
+from eegprep.configuration import Configuration
+from eegprep.defaults import defaults
+
 
 datadir = '/data'
+
+conf_file_path = join(datadir, 'eegprep.conf')
+config = Configuration()
+config.setDefaults(defaults)
+if os.path.isfile(conf_file_path):
+    with open(conf_file_path) as fh:
+        conf_string = fh.read()
+    config.updateFromString(conf_string)
+print(config)
+
 bidsdir = join(datadir, 'BIDS')
 
 
