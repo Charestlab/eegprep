@@ -1,4 +1,8 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+    
 
 requires = []
 with open('requirements.txt') as reqfile:
@@ -20,6 +24,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
+    scripts=['scripts/eegprep'],
     tests_require=requires,
     test_suite="tests"
 )

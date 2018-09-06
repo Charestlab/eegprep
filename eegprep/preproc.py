@@ -6,7 +6,7 @@ import pandas
 from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
 
-datadir = '/media/charesti-start/data/irsa-eeg/'
+datadir = '/data'
 bidsdir = join(datadir, 'BIDS')
 
 
@@ -16,7 +16,7 @@ for subjectdir in subjectdirs:
     sub = basename(subjectdir)[4:]
 
     # prepare derivatives directory
-    derivdir = join(bidsdir, 'derivatives', sub)
+    derivdir = join(bidsdir, 'derivatives', 'sub-' + sub)
     os.makedirs(derivdir, exist_ok=True)
 
     subject_epochs = {}
