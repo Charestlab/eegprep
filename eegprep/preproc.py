@@ -10,8 +10,8 @@ from eegprep.configuration import Configuration
 from eegprep.defaults import defaults
 
 
-# datadir = '/data'
-datadir = '/media/charesti-start/data/irsa-eeg/'
+datadir = '/data'
+#datadir = '/media/charesti-start/data/irsa-eeg/'
 
 conf_file_path = join(datadir, 'eegprep.conf')
 config = Configuration()
@@ -55,7 +55,13 @@ for subjectdir in subjectdirs:
             'REF': 'eeg',
         }
         channels['mne'] = channels.type.replace(bids2mne)
-        raw.set_channel_types(channels.mne.to_dict())
+        
+        try:
+            # the below fails if the specified channels are not in the data
+            raw.set_channel_types(channels.mne.to_dict())
+        except ValueError as exception:
+            print(exception)
+            continue
         refChannels = channels[channels.type=='REF'].index.tolist()
 
         # Filtering
