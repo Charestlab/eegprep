@@ -15,7 +15,10 @@ class Configuration(object):
             if len(keyVal) == 2:
                 key, value = [seg.strip('') for seg in keyVal]
                 if key in self.inner:
-                    self.inner[key] = int(value)
+                    if str(self.inner[key]).isdigit():
+                        self.inner[key] = int(value)
+                    else:
+                        self.inner[key] = value
 
     def __getitem__(self, key):
         return self.inner[key]
