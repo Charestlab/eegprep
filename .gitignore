@@ -1,3 +1,10 @@
+# VS Code
+.vscode
+
+# Images
+*.simg
+*.img
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

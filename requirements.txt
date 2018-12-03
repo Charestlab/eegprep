@@ -1,0 +1,7 @@
+numpy
+scipy
+matplotlib
+mne>0.16.2
+ipython
+pandas
+setuptools
