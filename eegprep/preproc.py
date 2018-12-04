@@ -1,4 +1,4 @@
-from os.path import join, basename
+from os.path import join, basename, splitext
 import os, glob
 import numpy
 import scipy.io
@@ -26,10 +26,11 @@ def run_preproc(datadir='/data'):
 
     bidsdir = join(datadir, 'BIDS')
 
-
+    
     subjectdirs = sorted(glob.glob(join(bidsdir, 'sub-*')))
     for subjectdir in subjectdirs:
         assert os.path.isdir(subjectdir)
+        
         sub = basename(subjectdir)[4:]
 
         # prepare derivatives directory
@@ -37,17 +38,21 @@ def run_preproc(datadir='/data'):
         os.makedirs(derivdir, exist_ok=True)
 
         subject_epochs = {}
-        for fname in sorted(glob.glob(join(subjectdir, 'eeg', '*.set'))):
+        rawtypes = {'.set': mne.io.read_raw_eeglab, '.bdf': mne.io.read_raw_edf}
+        for fname in sorted(glob.glob(join(subjectdir, 'eeg', '*'))):
+            _, ext = splitext(fname)
+            if ext not in rawtypes.keys():
+                continue
             sub, ses, task, run = filename2tuple(basename(fname))
 
             print('\nProcessing raw file: ' + basename(fname))
 
             # read data
-            raw = mne.io.read_raw_eeglab(fname, preload=True, verbose=False)
+            raw = rawtypes[ext](fname, preload=True, verbose=False)
             events = mne.find_events(raw)  #raw, consecutive=False, min_duration=0.005)
 
             # Set channel types and select reference channels
-            channelFile = fname.replace('eeg.set', 'channels.tsv')
+            channelFile = fname.replace('eeg' + ext, 'channels.tsv')
             channels = pandas.read_csv(channelFile, index_col='name', sep='\t')
             bids2mne = {
                 'MISC': 'misc',
@@ -64,24 +69,28 @@ def run_preproc(datadir='/data'):
             except ValueError as exception:
                 print(exception)
                 continue
-            refChannels = channels[channels.type=='REF'].index.tolist()
+
+            # set bad channels
+            raw.info['bads'] = channels[channels.status=='bad'].index.tolist()
 
 
             # Filtering
-            raw.filter(l_freq=0.1, h_freq=40, fir_design='firwin')
+            raw.filter(l_freq=0.05, h_freq=40, fir_design='firwin')
             raw.pick_types(eeg=True, eog=True)
             montage = mne.channels.read_montage(guess_montage(raw.ch_names))
+            print(montage)
             raw.set_montage(montage)
 
 
             # Set reference
+            refChannels = channels[channels.type=='REF'].index.tolist()
             raw.set_eeg_reference(ref_channels=refChannels)
 
             ##  epoching
             epochs_params = dict(
                 events=events,
-                tmin=-0.1,
-                tmax=0.8,
+                tmin=-0.2,
+                tmax=1,
                 reject=None  # dict(eeg=250e-6, eog=150e-6)
             )
             file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
