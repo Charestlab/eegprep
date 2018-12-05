@@ -13,6 +13,7 @@ From: python:3
 %post
     pip install --no-cache-dir -U https://api.github.com/repos/mne-tools/mne-python/zipball/master#egg=mne
     pip install eegprep-0.1.tar.gz
+    pip install ipython
 
 %runscript
     exec eegprep
