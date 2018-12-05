@@ -4,6 +4,7 @@ import numpy
 import scipy.io
 import mne
 import pandas
+from autoreject import AutoReject
 from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
 from eegprep.util import resample_events_on_resampled_epochs
@@ -110,15 +111,22 @@ def run_preproc(datadir='/data'):
             if not len(file_epochs):
                 continue
 
+            # autoreject
+            ar = AutoReject()
+            clean_epochs = ar.fit_transform(file_epochs)
+            fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_bad-epochs.png'.format(sub, ses, task, run)
+            fig = ar.get_reject_log(clean_epochs).plot()
+            fig.savefig(join(reportsdir, fname_plot))
+
             # store for now
-            subject_epochs[(ses, task, run)] = file_epochs
+            subject_epochs[(ses, task, run)] = clean_epochs
 
             # create evoked plots
-            conds = file_epochs.event_id.keys()
+            conds = clean_epochs.event_id.keys()
             selected_conds = random.sample(conds, min(len(conds), 3))
-            picks = mne.pick_types(file_epochs.info, eeg=True)
+            picks = mne.pick_types(clean_epochs.info, eeg=True)
             for cond in selected_conds:
-                evoked = file_epochs[cond].average()
+                evoked = clean_epochs[cond].average()
                 fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_evoked-{}.png'.format(sub, ses, task, run, cond)
                 fig = evoked.plot_joint(picks=picks)
                 fig.savefig(join(reportsdir, fname_plot))
