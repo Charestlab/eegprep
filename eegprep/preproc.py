@@ -7,7 +7,11 @@ import pandas
 from autoreject import AutoReject
 from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
-from eegprep.util import resample_events_on_resampled_epochs
+from eegprep.util import (
+    resample_events_on_resampled_epochs,
+    plot_rejectlog,
+    save_rejectlog
+)
 from eegprep.configuration import Configuration
 from eegprep.defaults import defaults
 
@@ -114,10 +118,15 @@ def run_preproc(datadir='/data'):
             # autoreject
             ar = AutoReject()
             clean_epochs = ar.fit_transform(file_epochs)
-            fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_bad-epochs.png'.format(sub, ses, task, run)
-            fig = ar.get_reject_log(clean_epochs).plot()
-            fig.savefig(join(reportsdir, fname_plot))
-
+            try:
+                rejectlog = ar.get_reject_log(clean_epochs)
+                fname_log = 'sub-{}_ses-{}_task-{}_run-{}_reject-log.npz'.format(sub, ses, task, run)
+                save_rejectlog(join(reportsdir, fname_log), rejectlog)
+                fig = plot_rejectlog(rejectlog)
+                fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_bad-epochs.png'.format(sub, ses, task, run)
+                fig.savefig(join(reportsdir, fname_plot))
+            except Exception as exception:
+                print(exception)
             # store for now
             subject_epochs[(ses, task, run)] = clean_epochs
 
