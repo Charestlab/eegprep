@@ -1,5 +1,5 @@
 from os.path import join, basename, splitext
-import os, glob
+import os, glob, random
 import numpy
 import scipy.io
 import mne
@@ -25,6 +25,7 @@ def run_preproc(datadir='/data'):
     print(config)
 
     bidsdir = join(datadir, 'BIDS')
+    eegprepdir = join(bidsdir, 'derivatives', 'eegprep')
 
     
     subjectdirs = sorted(glob.glob(join(bidsdir, 'sub-*')))
@@ -34,8 +35,11 @@ def run_preproc(datadir='/data'):
         sub = basename(subjectdir)[4:]
 
         # prepare derivatives directory
-        derivdir = join(bidsdir, 'derivatives', 'eegprep', 'sub-' + sub)
+        derivdir = join(eegprepdir, 'sub-' + sub)
         os.makedirs(derivdir, exist_ok=True)
+        reportsdir = join(eegprepdir, 'reports', 'sub-' + sub)
+        os.makedirs(reportsdir, exist_ok=True)
+
 
         subject_epochs = {}
         rawtypes = {'.set': mne.io.read_raw_eeglab, '.bdf': mne.io.read_raw_edf}
@@ -81,6 +85,13 @@ def run_preproc(datadir='/data'):
             print(montage)
             raw.set_montage(montage)
 
+            # plot raw data
+            nchans = len(raw.ch_names)
+            pick_channels = numpy.arange(0, nchans, numpy.floor(nchans/20)).astype(int)
+            start = numpy.round(raw.times.max()/2)
+            fig = raw.plot(start=start, order=pick_channels)
+            fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_raw.png'.format(sub, ses, task, run)
+            fig.savefig(join(reportsdir, fname_plot))
 
             # Set reference
             refChannels = channels[channels.type=='REF'].index.tolist()
@@ -96,8 +107,22 @@ def run_preproc(datadir='/data'):
             file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
             file_epochs.pick_types(eeg=True, exclude=refChannels)
 
-            if len(file_epochs):
-                subject_epochs[(ses, task, run)] = file_epochs
+            if not len(file_epochs):
+                continue
+
+            # store for now
+            subject_epochs[(ses, task, run)] = file_epochs
+
+            # create evoked plots
+            conds = file_epochs.event_id.keys()
+            selected_conds = random.sample(conds, min(len(conds), 3))
+            picks = mne.pick_types(file_epochs.info, eeg=True)
+            for cond in selected_conds:
+                evoked = file_epochs[cond].average()
+                fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_evoked-{}.png'.format(sub, ses, task, run, cond)
+                fig = evoked.plot_joint(picks=picks)
+                fig.savefig(join(reportsdir, fname_plot))
+
 
 
         sessSeg = 0
