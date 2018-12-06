@@ -72,20 +72,19 @@ def run_preproc(datadir='/data'):
             }
             channels['mne'] = channels.type.replace(bids2mne)
             
-            try:
-                # the below fails if the specified channels are not in the data
-                raw.set_channel_types(channels.mne.to_dict())
-            except ValueError as exception:
-                print(exception)
-                continue
+            # the below fails if the specified channels are not in the data
+            raw.set_channel_types(channels.mne.to_dict())
 
             # set bad channels
             raw.info['bads'] = channels[channels.status=='bad'].index.tolist()
 
+            # pick channels to use for epoching
+            epoching_picks = mne.pick_types(raw.info, eeg=True, eog=True, stim=False, exclude='bads')
+
 
             # Filtering
             raw.filter(l_freq=0.05, h_freq=40, fir_design='firwin')
-            raw.pick_types(eeg=True, eog=True)
+
             montage = mne.channels.read_montage(guess_montage(raw.ch_names))
             print(montage)
             raw.set_montage(montage)
@@ -108,14 +107,15 @@ def run_preproc(datadir='/data'):
                 tmin=-0.2,
                 tmax=1,
                 reject=None  # dict(eeg=250e-6, eog=150e-6)
+                picks=epoching_picks,
             )
-            file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
-            file_epochs.pick_types(eeg=True, exclude=refChannels)
+            file_epochs = mne.Epochs(raw, **epochs_params)
+
 
             if not len(file_epochs):
                 continue
 
-            # autoreject
+            # autoreject (under development)
             ar = AutoReject()
             clean_epochs = ar.fit_transform(file_epochs)
             try:
@@ -127,7 +127,9 @@ def run_preproc(datadir='/data'):
                 fig.savefig(join(reportsdir, fname_plot))
             except Exception as exception:
                 print(exception)
+
             # store for now
+            clean_epochs.drop_channels(refChannels)
             subject_epochs[(ses, task, run)] = clean_epochs
 
             # create evoked plots

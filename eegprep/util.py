@@ -41,7 +41,7 @@ def plot_rejectlog(rejectlog):
     fig.tight_layout(rect=[None, None, None, 1.1])
     return fig
 
-def save_rejectlog(rejectlog, filepath):
+def save_rejectlog(filepath, rejectlog):
     numpy.savez(
         filepath,
         bad_epochs=rejectlog.bad_epochs,
