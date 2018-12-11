@@ -79,11 +79,11 @@ def run_preproc(datadir='/data'):
             raw.info['bads'] = channels[channels.status=='bad'].index.tolist()
 
             # pick channels to use for epoching
-            epoching_picks = mne.pick_types(raw.info, eeg=True, eog=True, stim=False, exclude='bads')
+            epoching_picks = mne.pick_types(raw.info, eeg=True, eog=False, stim=False, exclude='bads')
 
 
             # Filtering
-            raw.filter(l_freq=0.05, h_freq=40, fir_design='firwin')
+            #raw.filter(l_freq=0.05, h_freq=40, fir_design='firwin')
 
             montage = mne.channels.read_montage(guess_montage(raw.ch_names))
             print(montage)
@@ -104,37 +104,33 @@ def run_preproc(datadir='/data'):
             ##  epoching
             epochs_params = dict(
                 events=events,
-                tmin=-0.2,
-                tmax=1,
-                reject=None  # dict(eeg=250e-6, eog=150e-6)
+                tmin=-0.1,
+                tmax=0.8,
+                reject=None,  # dict(eeg=250e-6, eog=150e-6)
                 picks=epoching_picks,
+                detrend=0,
             )
-            file_epochs = mne.Epochs(raw, **epochs_params)
-
-
-            if not len(file_epochs):
-                continue
+            file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
+            file_epochs.drop_channels(refChannels)
 
             # autoreject (under development)
-            ar = AutoReject()
+            ar = AutoReject(n_jobs=4)
             clean_epochs = ar.fit_transform(file_epochs)
-            try:
-                rejectlog = ar.get_reject_log(clean_epochs)
-                fname_log = 'sub-{}_ses-{}_task-{}_run-{}_reject-log.npz'.format(sub, ses, task, run)
-                save_rejectlog(join(reportsdir, fname_log), rejectlog)
-                fig = plot_rejectlog(rejectlog)
-                fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_bad-epochs.png'.format(sub, ses, task, run)
-                fig.savefig(join(reportsdir, fname_plot))
-            except Exception as exception:
-                print(exception)
+
+            rejectlog = ar.get_reject_log(clean_epochs)
+            fname_log = 'sub-{}_ses-{}_task-{}_run-{}_reject-log.npz'.format(sub, ses, task, run)
+            save_rejectlog(join(reportsdir, fname_log), rejectlog)
+            fig = plot_rejectlog(rejectlog)
+            fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_bad-epochs.png'.format(sub, ses, task, run)
+            fig.savefig(join(reportsdir, fname_plot))
+
 
             # store for now
-            clean_epochs.drop_channels(refChannels)
             subject_epochs[(ses, task, run)] = clean_epochs
 
             # create evoked plots
             conds = clean_epochs.event_id.keys()
-            selected_conds = random.sample(conds, min(len(conds), 3))
+            selected_conds = random.sample(conds, min(len(conds), 6))
             picks = mne.pick_types(clean_epochs.info, eeg=True)
             for cond in selected_conds:
                 evoked = clean_epochs[cond].average()
