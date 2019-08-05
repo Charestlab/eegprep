@@ -16,7 +16,7 @@ from eegprep.configuration import Configuration
 from eegprep.defaults import defaults
 
 
-def run_file(datadir='/data'):
+def run_bids(datadir='/data'):
 
     print('data directory: {}'.format(datadir))
     conf_file_path = join(datadir, 'eegprep.conf')
