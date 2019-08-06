@@ -26,5 +26,5 @@ def preproc_dataset(datadir):
 
         subjectdir = join(eegprepdir, 'sub-' + subject)
         os.makedirs(subjectdir, exist_ok=True)
-        out_fpath = join(subjectdir, 'sub-{}_epochs.npz'.format(subject))
+        out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
         preproc_subject(layout, subject, out_fpath)
