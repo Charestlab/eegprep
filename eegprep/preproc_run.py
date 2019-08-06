@@ -1,6 +1,5 @@
-from os.path import join, basename, splitext
+from os.path import join, basename
 import os, glob, random, numpy, mne, pandas
-from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
 from eegprep.util import (
     resample_events_on_resampled_epochs,
@@ -9,8 +8,9 @@ from eegprep.util import (
 )
 
 
-def preproc_run(fpath, config):
+def preproc_run(fpath):
 
+    print(basename(fpath))
     #sub, ses, task, run = filename2tuple(basename(fname))
 
     # read data
@@ -34,7 +34,8 @@ def preproc_run(fpath, config):
     # Set reference
     refChannels = channels[channels.type=='REF'].index.tolist()
     raw = raw.set_eeg_reference(ref_channels=refChannels)
-
+    # can now drop reference electrodes
+    raw.set_channel_types({k: 'misc' for k in refChannels})
 
     # set bad channels
     # raw.info['bads'] = channels[channels.status=='bad'].index.tolist()
@@ -47,8 +48,8 @@ def preproc_run(fpath, config):
     raw = raw.filter(l_freq=0.05, h_freq=45, fir_design='firwin')
 
     montage = mne.channels.read_montage(guess_montage(raw.ch_names))
-    print(montage)
-    raw.set_montage(montage)
+    # print(montage)
+    raw = raw.set_montage(montage, verbose=False)
 
     # plot raw data
     # nchans = len(raw.ch_names)
@@ -59,17 +60,18 @@ def preproc_run(fpath, config):
     # fig.savefig(join(reportsdir, fname_plot))
 
 
-    events = mne.find_events(raw)  #raw, consecutive=False, min_duration=0.005)
+    events = mne.find_events(raw, verbose=False)  #raw, consecutive=False, min_duration=0.005)
     ##  epoching
-    # epochs_params = dict(
-    #     events=events,
-    #     tmin=-0.1,
-    #     tmax=0.8,
-    #     reject=None,  # dict(eeg=250e-6, eog=150e-6)
-    #     picks=epoching_picks,
-    #     detrend=0,
-    # )
-    # file_epochs = mne.Epochs(raw, preload=True, **epochs_params)
+    picks = mne.pick_types(raw.info, eeg=True)
+    epochs_params = dict(
+        events=events,
+        tmin=-0.2,
+        tmax=0.8,
+        picks=picks,
+        verbose=False
+    )
+    epochs = mne.Epochs(raw, preload=True, **epochs_params)
+    epochs = epochs.resample(256., npad='auto') # downsample
     # file_epochs.drop_channels(refChannels)
 
     # # autoreject (under development)
@@ -96,4 +98,5 @@ def preproc_run(fpath, config):
     #     fname_plot = 'sub-{}_ses-{}_task-{}_run-{}_evoked-{}.png'.format(sub, ses, task, run, cond)
     #     fig = evoked.plot_joint(picks=picks)
     #     fig.savefig(join(reportsdir, fname_plot))
+    return epochs
 
