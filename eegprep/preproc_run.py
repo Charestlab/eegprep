@@ -1,10 +1,5 @@
 from os.path import join, basename, splitext
-import os, glob, random
-import numpy
-import scipy.io
-import mne
-import pandas
-#from autoreject import AutoReject
+import os, glob, random, numpy, mne, pandas
 from eegprep.bids.naming import filename2tuple
 from eegprep.guess import guess_montage
 from eegprep.util import (
@@ -12,8 +7,6 @@ from eegprep.util import (
     plot_rejectlog,
     save_rejectlog
 )
-from eegprep.configuration import Configuration
-from eegprep.defaults import defaults
 
 
 def preproc_run(fpath, config):
@@ -35,9 +28,8 @@ def preproc_run(fpath, config):
         'REF': 'eeg',
     }
     channels['mne'] = channels.type.replace(bids2mne)
-    
-    # the below fails if the specified channels are not in the data
     raw.set_channel_types(channels.mne.to_dict())
+
 
     # Set reference
     refChannels = channels[channels.type=='REF'].index.tolist()
