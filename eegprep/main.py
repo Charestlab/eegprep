@@ -1,6 +1,5 @@
 from eegprep.args import parse_arguments
 
 def run():
-    print(
-        parse_arguments()
-    )
+    args = parse_arguments()
+    print(args)
