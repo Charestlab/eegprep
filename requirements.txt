@@ -2,8 +2,8 @@ numpy
 scipy
 scikit-learn
 matplotlib
-mne
-autoreject
+mne==1.17.4
+autoreject==0.2.1
 ipython
 pandas
 setuptools
