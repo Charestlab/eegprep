@@ -15,7 +15,7 @@ class LogTests(TestCase):
         log.write = Mock()
         log.received_arguments(args)
         log.write.assert_called_with(
-            'eegprep command arguments:\n'
+            'Command arguments:\n'
             '\tfoo: abc\n'
             '\tbar: 1'
         )
@@ -26,5 +26,5 @@ class LogTests(TestCase):
         log.write = Mock()
         log.found_subjects(['pilot1', '03', 'pilot2', '02'])
         log.write.assert_called_with(
-            'found 4 subjects: pilot1, 03, pilot2, 02'
+            'Found 4 subjects: pilot1, 03, pilot2, 02'
         )

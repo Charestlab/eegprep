@@ -1,4 +1,5 @@
 from bids import BIDSLayout
+import copy
 
 # TODO:     # contains input, output, mem_storage, report
 
@@ -6,10 +7,11 @@ from bids import BIDSLayout
 
 class InputOutput(object):
 
-    def __init__(self, log, root_dir):
+    def __init__(self, log, root_dir, scope=None, layout=None):
         self.log = log
         self.root_dir = root_dir
-        self._layout = None
+        self._layout = layout or None
+        self.scope = scope or dict()
 
     @property
     def layout(self):
@@ -17,6 +19,9 @@ class InputOutput(object):
             self.log.discovering_data()
             self._layout = BIDSLayout(self.root_dir)
         return self._layout
+
+    def describe_scope(self):
+        return ' '.join([f'{k[:3]}={v}' for k, v in self.scope.items()])
     
     def get_subject_labels(self):
         subjects = self.layout.get(return_type='id', target='subject')
@@ -27,7 +32,11 @@ class InputOutput(object):
         return self.layout.get(return_type='id', target='run')
 
     def for_(self, subject=None, run=None):
-        return self
+        new_scope = copy.copy(self.scope)
+        for spec, val in dict(subject=subject, run=run).items():
+            if val is not None:
+                new_scope[spec] = val
+        return InputOutput(self.log, self.root_dir, new_scope, self.layout)
 
 # -    # output
 # -    eegprepdir = join(args.data_directory, 'derivatives', 'eegprep')

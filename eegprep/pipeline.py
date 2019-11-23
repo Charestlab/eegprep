@@ -10,4 +10,6 @@ class Pipeline(object):
         self.jobs.append(job)
 
     def run(self):
-        pass
+        self.log.started_pipeline(self.jobs)
+        if self.dry:
+            return
