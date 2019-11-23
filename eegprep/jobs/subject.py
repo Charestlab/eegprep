@@ -5,9 +5,6 @@ from eegprep.jobs.concat_epochs import ConcatEpochsJob
 
 class SubjectJob(BaseJob):
 
-    def __init__(self, io):
-        self.io = io
-
     def add_to(self, pipeline):
         runs = self.io.get_run_labels()
         for run_label in runs:

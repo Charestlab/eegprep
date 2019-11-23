@@ -6,7 +6,7 @@
 
 class InputOutput(object):
 
-    def __init__(self, root_dir):
+    def __init__(self, root_dir, log):
         pass
     
     def get_subject_labels(self):

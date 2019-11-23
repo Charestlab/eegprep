@@ -1,5 +1,6 @@
 from eegprep.args import parse_arguments
 from eegprep.pipeline import Pipeline
+from eegprep.log import Log
 from eegprep.input_output import InputOutput
 from eegprep.jobs.subject import SubjectJob
 
@@ -11,13 +12,17 @@ def run(args=None):
         args (Namespace, optional): Object with eeg prep parameters 
             as attributes. Defaults to None.
     """
+    log = Log()
     args = args or parse_arguments()
-    print(args)
+    log.received_arguments(args)
+    
     io = InputOutput(
-        root_dir = args.data_directory
+        root_dir = args.data_directory,
+        log
     )
     pipeline = Pipeline(
-        dry = args.dry_run
+        dry = args.dry_run,
+        log
     )
 
     subjects = io.get_subject_labels()
@@ -26,8 +31,10 @@ def run(args=None):
 
     if args.subject_label:
         subjects = [args.subject_label]
-
     for subject_label in subjects:
-        job = SubjectJob(io.for_(subject=subject_label))
+        job = SubjectJob(
+            io.for_(subject=subject_label),
+            log.new_partial_log()
+        )
         job.add_to(pipeline)
     pipeline.run()

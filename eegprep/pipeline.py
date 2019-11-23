@@ -1,7 +1,7 @@
 
 class Pipeline(object):
 
-    def __init__(self, dry=False):
+    def __init__(self, dry, log):
         pass
 
     def run(self):
