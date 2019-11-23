@@ -2,14 +2,12 @@ from unittest import TestCase
 from unittest.mock import Mock
 
 
-class MockNamespace(object):
-    pass
-
-
 class LogTests(TestCase):
 
     def test_received_arguments(self):
         from eegprep.log import Log
+        class MockNamespace(object):
+            pass
         args = MockNamespace()
         args.foo = 'abc'
         args.bar = 1
@@ -20,4 +18,13 @@ class LogTests(TestCase):
             'eegprep command arguments:\n'
             '\tfoo: abc\n'
             '\tbar: 1'
+        )
+
+    def test_found_subjects(self):
+        from eegprep.log import Log
+        log = Log()
+        log.write = Mock()
+        log.found_subjects(['pilot1', '03', 'pilot2', '02'])
+        log.write.assert_called_with(
+            'found 4 subjects: pilot1, 03, pilot2, 02'
         )

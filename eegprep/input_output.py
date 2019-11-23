@@ -1,4 +1,4 @@
-#from bids import BIDSLayout
+from bids import BIDSLayout
 
 # TODO:     # contains input, output, mem_storage, report
 
@@ -7,16 +7,27 @@
 class InputOutput(object):
 
     def __init__(self, log, root_dir):
-        pass
+        self.log = log
+        self.root_dir = root_dir
+        self._layout = None
+
+    @property
+    def layout(self):
+        if self._layout is None:
+            self.log.discovering_data()
+            self._layout = BIDSLayout(self.root_dir)
+        return self._layout
     
     def get_subject_labels(self):
-        # TODO: must be sorted
-        return ''
+        subjects = self.layout.get(return_type='id', target='subject')
+        self.log.found_subjects(subjects)
+        return subjects
 
-    def for_(self, subject=None):
-        pass
+    def get_run_labels(self):
+        return self.layout.get(return_type='id', target='run')
 
-#    subjects = layout.get(return_type='id', target='subject')
+    def for_(self, subject=None, run=None):
+        return self
 
 # -    # output
 # -    eegprepdir = join(args.data_directory, 'derivatives', 'eegprep')

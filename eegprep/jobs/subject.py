@@ -8,8 +8,8 @@ class SubjectJob(BaseJob):
     def add_to(self, pipeline):
         runs = self.io.get_run_labels()
         for run_label in runs:
-            job = RunJob(self.io.for_(run=run_label))
+            job = RunJob(self.io.for_(run=run_label), self.log)
             job.add_to(pipeline)
         if runs:
-            job = ConcatEpochsJob(self.io)
+            job = ConcatEpochsJob(self.io, self.log)
             job.add_to(pipeline)
