@@ -1,6 +1,6 @@
 from eegprep.args import parse_arguments
 from eegprep.pipeline import Pipeline
-from eegprep.inputoutput import InputOutput
+from eegprep.input_output import InputOutput
 from eegprep.jobs.subject import SubjectJob
 
 

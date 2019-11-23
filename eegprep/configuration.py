@@ -1,4 +1,18 @@
+"""[summary]
 
+Previously used like:
+
+    # print('data directory: {}'.format(datadir))
+    # conf_file_path = join(datadir, 'eegprep.conf')
+    # config = Configuration()
+    # config.setDefaults(defaults)
+    # if os.path.isfile(conf_file_path):
+    #     with open(conf_file_path) as fh:
+    #         conf_string = fh.read()
+    #     config.updateFromString(conf_string)
+    # print('configuration:')
+    # print(config)
+"""
 
 class Configuration(object):
 

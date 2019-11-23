@@ -23,3 +23,12 @@ class InputOutput(object):
 # -    subjectdir = join(eegprepdir, 'sub-' + subject)
 # -    os.makedirs(subjectdir, exist_ok=True)
 # -    out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
+    # eegprepdir = join(datadir, 'derivatives', 'eegprep')
+    # layout = BIDSLayout(datadir)
+    # subjects = layout.get(return_type='id', target='subject')
+    # for subject in subjects:
+
+    #     subjectdir = join(eegprepdir, 'sub-' + subject)
+    #     os.makedirs(subjectdir, exist_ok=True)
+    #     out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
+    #     preproc_subject(layout, subject, out_fpath)
