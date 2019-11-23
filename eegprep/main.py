@@ -19,10 +19,15 @@ def run(args=None):
     pipeline = Pipeline(
         dry = args.dry_run
     )
-    if args.subject_index:     
-        args.subject_label = io.get_subject_label_for_index(0)
+
+    subjects = io.get_subject_labels()
+    if args.subject_index:
+        subjects = [subjects[args.subject_index]]
 
     if args.subject_label:
-        job = SubjectJob()
+        subjects = [args.subject_label]
+
+    for subject_label in subjects:
+        job = SubjectJob(io.for_(subject=subject_label))
         job.add_to(pipeline)
     pipeline.run()

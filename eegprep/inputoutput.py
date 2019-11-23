@@ -9,8 +9,12 @@ class InputOutput(object):
     def __init__(self, root_dir):
         pass
     
-    def get_subject_label_for_index(self, index):
+    def get_subject_labels(self):
+        # TODO: must be sorted
         return ''
+
+    def for_(self, subject=None):
+        pass
 
 #    subjects = layout.get(return_type='id', target='subject')
 
