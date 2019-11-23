@@ -20,7 +20,7 @@ setup(
     author='',
     author_email='',
     keywords='analysis eeg BIDS',
-    packages=['eegprep', 'eegprep.bids'],
+    packages=['eegprep'],
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,

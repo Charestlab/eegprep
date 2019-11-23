@@ -16,14 +16,8 @@ def run(args=None):
     args = args or parse_arguments()
     log.received_arguments(args)
     
-    io = InputOutput(
-        root_dir = args.data_directory,
-        log
-    )
-    pipeline = Pipeline(
-        dry = args.dry_run,
-        log
-    )
+    io = InputOutput(log, args.data_directory)
+    pipeline = Pipeline(log, args.dry_run)
 
     subjects = io.get_subject_labels()
     if args.subject_index:
