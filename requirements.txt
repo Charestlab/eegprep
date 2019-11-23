@@ -2,7 +2,7 @@ numpy
 scipy
 scikit-learn
 matplotlib
-mne==1.17.4
+mne==0.19.2
 autoreject==0.2.1
 ipython
 pandas

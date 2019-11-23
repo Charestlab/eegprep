@@ -1,32 +1,28 @@
 from eegprep.args import parse_arguments
-from os.path import join, basename, splitext
-import os, glob, random
-from eegprep.preproc_subject import preproc_subject
-from bids import BIDSLayout
+from eegprep.pipeline import Pipeline
+from eegprep.inputoutput import InputOutput
+from eegprep.jobs.subject import SubjectJob
 
 
-def run():
-    args = parse_arguments()
-
-
+def run(args=None):
+    """Parses commandline arguments and runs EEGprep for the specified scope
     
-    layout = BIDSLayout(args.data_directory)
-    subjects = layout.get(return_type='id', target='subject')
+    Args:
+        args (Namespace, optional): Object with eeg prep parameters 
+            as attributes. Defaults to None.
+    """
+    args = args or parse_arguments()
+    print(args)
+    io = InputOutput(
+        root_dir = args.data_directory
+    )
+    pipeline = Pipeline(
+        dry = args.dry_run
+    )
+    if args.subject_index:     
+        args.subject_label = io.get_subject_label_for_index(0)
 
-
-    # IO
-    # contains input, output, mem_storage, report
-    # job = subject(io.for(subject=sub))
-    #   io.store(for_run=run, epochs) # io decides whether to keep in memory or to store temp or store long term
-    # pipeline.add(job)
-    # pipeline.run()
-
-
-
-    preproc_subject(layout, subject)
-
-    # output
-    eegprepdir = join(args.data_directory, 'derivatives', 'eegprep')
-    subjectdir = join(eegprepdir, 'sub-' + subject)
-    os.makedirs(subjectdir, exist_ok=True)
-    out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
+    if args.subject_label:
+        job = SubjectJob()
+        job.add_to(pipeline)
+    pipeline.run()

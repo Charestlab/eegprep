@@ -24,7 +24,11 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
-    scripts=['scripts/eegprep'],
+    entry_points={
+        'console_scripts': [
+            'eegprep = eegprep.main:run',
+        ],
+    },
     tests_require=requires,
     test_suite="tests"
 )

@@ -14,6 +14,8 @@ def parse_arguments(args=None):
     parser = ArgumentParser()
     parser.add_argument('data_directory', type=str, nargs='?', default='/data',
         help='root data directory')
+    parser.add_argument('--dry-run', action='store_true', 
+        help='rshow assembled pipeline but do not run analyses or store files')
     subject = parser.add_mutually_exclusive_group()
     subject.add_argument('-s', '--subject-index', type=int,
         help='index of subject to work on, when sorted alphabetically')
