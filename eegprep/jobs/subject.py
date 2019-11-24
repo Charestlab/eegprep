@@ -14,6 +14,7 @@ class SubjectJob(BaseJob):
                 found_data = True
                 job = RunJob(session_io.for_(run=run_label), self.log)
                 job.add_to(pipeline)
+                self.expire_output_on_cleanup(job)
         if found_data:
             job = ConcatEpochsJob(self.io, self.log)
             job.add_to(pipeline)

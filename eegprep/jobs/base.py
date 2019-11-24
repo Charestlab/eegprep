@@ -5,6 +5,7 @@ class BaseJob(object):
     def __init__(self, io, log):
         self.io = io
         self.log = log
+        self.jobs_to_expire = []
 
     def get_id(self):
         return self.__class__.__name__.replace('Job', '')
@@ -26,4 +27,11 @@ class BaseJob(object):
         pass
 
     def run(self):
-        raise NotImplementedError(self.__class__.__name__ + '.run()')
+        pass
+
+    def cleanup(self):
+        for job in self.jobs_to_expire:
+            self.io.expire_output_of(job)
+
+    def expire_output_on_cleanup(self, job):
+        self.jobs_to_expire.append(job)

@@ -16,3 +16,5 @@ class Pipeline(object):
         for job in self.jobs:
             self.log.starting_job(job)
             job.run()
+            self.log.cleaning_up_after_job(job)
+            job.cleanup()

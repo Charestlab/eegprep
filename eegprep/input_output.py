@@ -94,26 +94,15 @@ class InputOutput(object):
         assert len(objects) == 1
         return objects[0]
 
-# TODO:     # contains input, output, mem_storage, report
-# TODO: job can choose when to expire objects 
-# 
-# (parent job? interface?) self.add_child() + job.cleanup() + io.store('obj', for_=self) CleanupJob?
-# self.cleanup_after(child_job)
-# self.store_later(child_job)
-# super().add_to() or pipeline.add(self)
-# add_children_to(self, pipeline)
+    def expire_output_of(self, job):
+        self.memory.delete(job=job.get_id(), **self.scope)
+
+
 # TODO:  io.store(for_run=run, epochs) # io decides whether to keep in memory (with mem limit arg) or to store temp or store long term
-# eeg_runs = layout.get(subject=subject, suffix='eeg', extension='bdf')
+
 # -    # output
 # -    eegprepdir = join(args.data_directory, 'derivatives', 'eegprep')
 # -    subjectdir = join(eegprepdir, 'sub-' + subject)
 # -    os.makedirs(subjectdir, exist_ok=True)
 # -    out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
 # eegprepdir = join(datadir, 'derivatives', 'eegprep')
-# layout = BIDSLayout(datadir)
-# subjects = layout.get(return_type='id', target='subject')
-# for subject in subjects:
-#     subjectdir = join(eegprepdir, 'sub-' + subject)
-#     os.makedirs(subjectdir, exist_ok=True)
-#     out_fpath = join(subjectdir, 'sub-{}_epo.npz'.format(subject))
-#     preproc_subject(layout, subject, out_fpath)

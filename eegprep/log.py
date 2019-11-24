@@ -26,13 +26,16 @@ class Log(object):
     def starting_job(self, job):
         self.write(f'Starting job: ' + job.describe())
 
+    def cleaning_up_after_job(self, job):
+        self.write(f'Cleaning up after job: ' + job.describe())
+
     def discovering_data(self):
         self.write('Discovering data..')
 
     def storing_object_in_memory(self, key, obj):
-        self.write(f'Storing {repr(obj)} in memory store as {key}')
+        self.write(f'Storing object in memory store as {key}: {repr(obj)}')
 
     def removing_object_from_memory(self, key, obj):
-        self.write(f'Removing {repr(obj)} from memory known as {key}')
+        self.write(f'Removing object from memory known as {key}: {repr(obj)}')
 
     # TODO: job can flush log after done:  log.flush(io) (io.write_text(log.xyz))

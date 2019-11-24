@@ -11,10 +11,13 @@ class RunJob(BaseJob):
     def add_children_to(self, pipeline):
         job = ReadJob(self.io, self.log)
         job.add_to(pipeline)
+        self.expire_output_on_cleanup(job)
         job = FilterJob(self.io, self.log)
         job.add_to(pipeline)
+        self.expire_output_on_cleanup(job)
         job = EpochJob(self.io, self.log)
         job.add_to(pipeline)
+        # io.store_output_of(job)
 
         # plot raw data
         # nchans = len(raw.ch_names)
