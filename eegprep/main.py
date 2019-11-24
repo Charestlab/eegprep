@@ -17,7 +17,7 @@ def run(args=None):
     args = args or parse_arguments()
     log.received_arguments(args)
     
-    io = InputOutput(log, Memory(), args.data_directory)
+    io = InputOutput(log, Memory(log), args.data_directory)
     pipeline = Pipeline(log, args.dry_run)
 
     subjects = io.get_subject_labels()

@@ -80,8 +80,9 @@ class InputOutput(object):
         return fpaths[0]
 
     def store_object(self, obj, name, job):
-        job_id = job.get_id()
-        identifiers = dict(name=name, job=job_id, **self.scope)
+        # first delete existing copies (overwriting)
+        self.memory.delete(name=name, **self.scope)
+        identifiers = dict(name=name, job=job.get_id(), **self.scope)
         self.memory.store(obj, **identifiers)
 
     def retrieve_objects(self, name):

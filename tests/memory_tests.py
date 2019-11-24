@@ -7,7 +7,8 @@ class MemoryTests(TestCase):
     def test_store_retrieve(self):
         from eegprep.memory import Memory
         obj1, obj2, obj3, obj4 = Mock(), Mock(), Mock(), Mock()
-        ram = Memory()
+        log = Mock()
+        ram = Memory(log)
         ram.store(obj1, foo='a')
         ram.store(obj2, foo='a', bar=1)
         ram.store(obj3, foo='a', bar=2, baz=0.5)

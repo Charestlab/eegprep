@@ -29,5 +29,10 @@ class Log(object):
     def discovering_data(self):
         self.write('Discovering data..')
 
+    def storing_object_in_memory(self, key, obj):
+        self.write(f'Storing {repr(obj)} in memory store as {key}')
+
+    def removing_object_from_memory(self, key, obj):
+        self.write(f'Removing {repr(obj)} from memory known as {key}')
 
     # TODO: job can flush log after done:  log.flush(io) (io.write_text(log.xyz))
