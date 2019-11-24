@@ -12,9 +12,9 @@ class EpochJob(BaseJob):
         epochs_params = dict(
             events=events,
             tmin=-0.2,
-            tmax=0.8,
+            tmax=3.1,
             picks=picks,
             verbose=False
         )
         epochs = mne.Epochs(raw, preload=True, **epochs_params)
-        self.io.store_object(epochs, name='epochs', job=self)
+        self.io.store_object(epochs, name='epo', job=self)
