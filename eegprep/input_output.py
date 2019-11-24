@@ -4,8 +4,9 @@ import copy
 
 class InputOutput(object):
 
-    def __init__(self, log, root_dir, scope=None, layout=None):
+    def __init__(self, log, memory, root_dir, scope=None, layout=None):
         self.log = log
+        self.memory = memory
         self.root_dir = root_dir
         self._layout = layout or None
         self.scope = scope or dict()
@@ -33,7 +34,13 @@ class InputOutput(object):
         for spec, val in dict(subject=subject, run=run).items():
             if val is not None:
                 new_scope[spec] = val
-        return InputOutput(self.log, self.root_dir, new_scope, self.layout)
+        return InputOutput(
+            self.log,
+            self.memory,
+            self.root_dir,
+            new_scope,
+            self.layout
+        )
 
     def get_subject_labels(self):
         subjects = self.layout.get(return_type='id', target='subject')
@@ -53,10 +60,18 @@ class InputOutput(object):
         return fpaths[0]
 
     def store_object(self, obj, name, job):
-        pass
+        # TODO: identify job by string
+        identifiers = dict(name=name, **self.scope)
+        self.memory.store(obj, **identifiers)
+
+    def retrieve_objects(self, name):
+        identifiers = dict(name=name, **self.scope)
+        return self.memory.retrieve(**identifiers)
 
     def retrieve_object(self, name):
-        pass
+        objects = self.retrieve_objects(name)
+        assert len(objects) == 1
+        return objects[0]
 
 # TODO:     # contains input, output, mem_storage, report
 # TODO: job can choose when to expire objects 

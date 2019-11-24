@@ -1,6 +1,7 @@
 from eegprep.args import parse_arguments
 from eegprep.pipeline import Pipeline
 from eegprep.log import Log
+from eegprep.memory import Memory
 from eegprep.input_output import InputOutput
 from eegprep.jobs.subject import SubjectJob
 
@@ -16,7 +17,7 @@ def run(args=None):
     args = args or parse_arguments()
     log.received_arguments(args)
     
-    io = InputOutput(log, args.data_directory)
+    io = InputOutput(log, Memory(), args.data_directory)
     pipeline = Pipeline(log, args.dry_run)
 
     subjects = io.get_subject_labels()
