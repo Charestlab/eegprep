@@ -41,11 +41,16 @@ class InputOutput(object):
         return subjects
 
     def get_run_labels(self):
-        # TODO: must restrict to scope
-        return self.layout.get(return_type='id', target='run')
+        return self.layout.get(return_type='id', target='run', **self.scope)
 
     def get_filepath(self, suffix):
-        pass
+        fpaths = self.layout.get(
+            return_type='filename',
+            suffix=suffix,
+            **self.scope
+        )
+        assert len(fpaths) == 1
+        return fpaths[0]
 
     def store_object(self, obj, name, job):
         pass
