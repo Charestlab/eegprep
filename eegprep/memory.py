@@ -1,5 +1,6 @@
 from copy import copy
 
+
 class Memory(object):
     """Stores arbitrary objects by a set of key/value pairs.
     """

@@ -89,7 +89,7 @@ class InputOutput(object):
 
     def retrieve_objects(self, name):
         filters = dict(name=name, **self.scope)
-        return self.memory.retrieve(**filters)
+        return self.memory.find(**filters)
 
     def retrieve_object(self, name):
         objects = self.retrieve_objects(name)
@@ -102,10 +102,11 @@ class InputOutput(object):
     def write_output_of(self, job):
         keys = self.memory.find_matching_keys(job=job.get_id(), **self.scope)
         for key in keys:
-            self.write_object(key, self.memory.get(key))
+            name = dict(key)['name']
+            self.write_object(name, self.memory.get(key))
 
-    def write_object(self, descriptors, obj):
-        fpath = self.build_fpath(suffix=descriptors.name, ext='fif')
+    def write_object(self, name, obj):
+        fpath = self.build_fpath(suffix=name, ext='fif')
         self.ensure_dir(dirname(fpath))
         self.log.writing_object(obj, fpath)
         obj.save(fpath)
