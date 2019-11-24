@@ -21,7 +21,7 @@ def run(args=None):
 
     subjects = io.get_subject_labels()
     if args.subject_index:
-        subjects = [subjects[args.subject_index]]
+        subjects = [subjects[args.subject_index-1]]
 
     if args.subject_label:
         subjects = [args.subject_label]

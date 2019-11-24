@@ -1,11 +1,13 @@
 from eegprep.jobs.base import BaseJob
+import mne
 
 
 class EpochJob(BaseJob):
 
     def run(self):
-        events = mne.find_events(raw, verbose=False)  #raw, consecutive=False, min_duration=0.005)
-        ##  epoching
+        raw = self.io.retrieve_object('raw')
+        # additional options: consecutive=False, min_duration=0.005)
+        events = mne.find_events(raw, verbose=False)
         picks = mne.pick_types(raw.info, eeg=True)
         epochs_params = dict(
             events=events,
@@ -15,5 +17,4 @@ class EpochJob(BaseJob):
             verbose=False
         )
         epochs = mne.Epochs(raw, preload=True, **epochs_params)
-        #epochs = epochs.resample(256., npad='auto') # downsample
-        # file_epochs.drop_channels(refChannels)
+        self.io.store_object(epochs, name='epochs', job=self)

@@ -16,7 +16,11 @@ class BaseJob(object):
         return scope + ' ' + self.__class__.__name__.replace('Job', '')
 
     def add_to(self, pipeline):
+        self.add_children_to(pipeline)
         pipeline.add(self)
+
+    def add_children_to(self, pipeline):
+        raise NotImplementedError(self.__class__.__name__ + '.run()')
 
     def run(self):
         raise NotImplementedError(self.__class__.__name__ + '.run()')

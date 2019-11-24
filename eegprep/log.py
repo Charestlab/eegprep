@@ -19,7 +19,7 @@ class Log(object):
 
     def started_pipeline(self, jobs):
         m = f'Starting pipeline with {len(jobs)} jobs:\n'
-        job_lines = [f'{j}: {job.describe()}' for j, job in enumerate(jobs)]
+        job_lines = [f'{j+1}: {job.describe()}' for j, job in enumerate(jobs)]
         m += '\n'.join(job_lines)
         self.write(m)
 

@@ -8,7 +8,7 @@ class RunJob(BaseJob):
     """Represents preprocessing of one raw data file.
     """
 
-    def add_to(self, pipeline):
+    def add_children_to(self, pipeline):
         job = ReadJob(self.io, self.log)
         job.add_to(pipeline)
         job = FilterJob(self.io, self.log)
