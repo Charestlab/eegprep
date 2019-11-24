@@ -38,4 +38,7 @@ class Log(object):
     def removing_object_from_memory(self, key, obj):
         self.write(f'Removing object from memory known as {key}: {repr(obj)}')
 
+    def writing_object(self, obj, fpath):
+        self.write(f'Writing object to disk at {fpath}')
+
     # TODO: job can flush log after done:  log.flush(io) (io.write_text(log.xyz))

@@ -8,12 +8,15 @@ class Memory(object):
         self.objects = {}
         self.log = log
 
+    def get(self, key):
+        return self.objects[key]
+
     def store(self, obj, **filters):
         key = frozenset(filters.items())
         self.log.storing_object_in_memory(key, obj)
         self.objects[key] = obj
 
-    def retrieve(self, **filters):
+    def find(self, **filters):
         selection = self.find_matching_keys(**filters)
         return [self.objects[k] for k in selection]
 

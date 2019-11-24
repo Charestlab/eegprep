@@ -6,6 +6,7 @@ class BaseJob(object):
         self.io = io
         self.log = log
         self.jobs_to_expire = []
+        self.jobs_to_write = []
 
     def get_id(self):
         return self.__class__.__name__.replace('Job', '')
@@ -30,8 +31,13 @@ class BaseJob(object):
         pass
 
     def cleanup(self):
+        for job in self.jobs_to_write:
+            self.io.write_output_of(job)
         for job in self.jobs_to_expire:
             self.io.expire_output_of(job)
 
     def expire_output_on_cleanup(self, job):
         self.jobs_to_expire.append(job)
+
+    def write_output_on_cleanup(self, job):
+        self.jobs_to_write.append(job)

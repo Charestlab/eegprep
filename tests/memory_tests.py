@@ -13,4 +13,4 @@ class MemoryTests(TestCase):
         ram.store(obj2, foo='a', bar=1)
         ram.store(obj3, foo='a', bar=2, baz=0.5)
         ram.store(obj4, foo='b', bar=2)
-        self.assertEqual(ram.retrieve(foo='a', bar=2), [obj1, obj3])
+        self.assertEqual(ram.find(foo='a', bar=2), [obj1, obj3])
