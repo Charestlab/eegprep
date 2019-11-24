@@ -13,3 +13,6 @@ class Pipeline(object):
         self.log.started_pipeline(self.jobs)
         if self.dry:
             return
+        for job in self.jobs:
+            self.log.starting_job(job)
+            job.run()

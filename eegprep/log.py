@@ -23,6 +23,9 @@ class Log(object):
         m += '\n'.join(job_lines)
         self.write(m)
 
+    def starting_job(self, job):
+        self.write(f'Starting job: ' + job.describe())
+
     def discovering_data(self):
         self.write('Discovering data..')
 

@@ -29,9 +29,10 @@ class InputOutput(object):
     def describe_scope(self):
         return ' '.join([f'{k[:3]}={v}' for k, v in self.scope.items()])
     
-    def for_(self, subject=None, run=None):
+    def for_(self, subject=None, session=None, run=None):
         new_scope = copy.copy(self.scope)
-        for spec, val in dict(subject=subject, run=run).items():
+        filters = dict(subject=subject, session=session, run=run)
+        for spec, val in filters.items():
             if val is not None:
                 new_scope[spec] = val
         return InputOutput(
@@ -43,30 +44,49 @@ class InputOutput(object):
         )
 
     def get_subject_labels(self):
-        subjects = self.layout.get(return_type='id', target='subject')
+        subjects = self.layout.get(
+            return_type='id',
+            target='subject',
+            datatype='eeg'
+        )
         self.log.found_subjects(subjects)
         return subjects
 
+    def get_session_labels(self):
+        return self.layout.get(
+            return_type='id',
+            target='session',
+            datatype='eeg',
+            **self.scope
+        )
+
     def get_run_labels(self):
-        return self.layout.get(return_type='id', target='run', **self.scope)
+        return self.layout.get(
+            return_type='id', 
+            target='run',
+            datatype='eeg',
+            **self.scope
+        )
 
     def get_filepath(self, suffix):
         fpaths = self.layout.get(
             return_type='filename',
             suffix=suffix,
+            datatype='eeg',
             **self.scope
         )
+        fpaths = [f for f in fpaths if '.json' not in f]
         assert len(fpaths) == 1
         return fpaths[0]
 
     def store_object(self, obj, name, job):
-        # TODO: identify job by string
-        identifiers = dict(name=name, **self.scope)
+        job_id = job.get_id()
+        identifiers = dict(name=name, job=job_id, **self.scope)
         self.memory.store(obj, **identifiers)
 
     def retrieve_objects(self, name):
-        identifiers = dict(name=name, **self.scope)
-        return self.memory.retrieve(**identifiers)
+        filters = dict(name=name, **self.scope)
+        return self.memory.retrieve(**filters)
 
     def retrieve_object(self, name):
         objects = self.retrieve_objects(name)

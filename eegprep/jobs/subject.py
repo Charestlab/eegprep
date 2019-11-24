@@ -6,10 +6,14 @@ from eegprep.jobs.concat_epochs import ConcatEpochsJob
 class SubjectJob(BaseJob):
 
     def add_children_to(self, pipeline):
-        runs = self.io.get_run_labels()
-        for run_label in runs:
-            job = RunJob(self.io.for_(run=run_label), self.log)
-            job.add_to(pipeline)
-        if runs:
+        found_data = False
+        sessions = self.io.get_session_labels()
+        for session_label in sessions:
+            session_io = self.io.for_(session=session_label)
+            for run_label in session_io.get_run_labels():
+                found_data = True
+                job = RunJob(session_io.for_(run=run_label), self.log)
+                job.add_to(pipeline)
+        if found_data:
             job = ConcatEpochsJob(self.io, self.log)
             job.add_to(pipeline)
