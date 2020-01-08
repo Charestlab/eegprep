@@ -32,13 +32,15 @@ class ReadJob(BaseJob):
         # set bad channels
         # raw.info['bads'] = channels[channels.status=='bad'].index.tolist()
 
-        montage = mne.channels.read_montage(guess_montage(raw.ch_names))
-        raw.set_montage(montage, verbose=False)
-
          # Set reference
         refChannels = channels[channels.type=='REF'].index.tolist()     
-        raw.set_eeg_reference(ref_channels=refChannels)
+        raw.set_eeg_reference(ref_channels=refChannels) 
         # can now drop reference electrodes
         raw.set_channel_types({k: 'misc' for k in refChannels})
+
+        # tell MNE about electrode locations
+        montageName = guess_montage(raw.ch_names)
+        montage = mne.channels.make_standard_montage(kind=montageName)
+        raw.set_montage(montage, verbose=False)
 
         self.io.store_object(raw, name='raw', job=self)
