@@ -1,5 +1,0 @@
-#!/usr/bin/env python3
-import sys
-from eegprep.preproc import run_preproc
-datadir = sys.argv[1] if len(sys.argv) > 1 else '/data'
-run_preproc(datadir)

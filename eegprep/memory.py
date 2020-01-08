@@ -1,0 +1,45 @@
+from copy import copy
+
+
+class Memory(object):
+    """Stores arbitrary objects by a set of key/value pairs.
+    """
+
+    def __init__(self, log):
+        self.objects = {}
+        self.log = log
+        self.total_size = 0
+
+    def get(self, key):
+        return self.objects[key]
+
+    def store(self, obj, **filters):
+        key = frozenset(filters.items())
+        size = obj._size
+        self.total_size += size
+        self.log.storing_object_in_memory(key, obj, size, self.total_size)
+        self.objects[key] = obj
+
+    def find(self, **filters):
+        selection = self.find_matching_keys(**filters)
+        return [self.objects[k] for k in selection]
+
+    def delete(self, **filters):
+        selection = self.find_matching_keys(**filters)
+        for k in selection:
+            obj = self.objects[k]
+            size = obj._size
+            self.total_size -= size
+            self.log.removing_object_from_memory(
+                k, obj, size, self.total_size)
+            del self.objects[k]
+
+    def find_matching_keys(self, **filters):
+        selection = []
+        for object_key in self.objects.keys():
+            for name, val in object_key:
+                if (name in filters) and (filters.get(name) != val):
+                    break
+            else:
+                selection.append(object_key)
+        return selection
