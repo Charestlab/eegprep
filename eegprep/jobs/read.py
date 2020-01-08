@@ -8,7 +8,12 @@ class ReadJob(BaseJob):
     def run(self):
 
         fpath_raw = self.io.get_filepath(suffix='eeg')
-        raw = mne.io.read_raw_bdf(fpath_raw, preload=True, verbose=False)
+        ext = fpath_raw[-3:]
+        raw_funcs = {
+            'bdf': mne.io.read_raw_bdf,
+            'edf': mne.io.read_raw_edf
+        }
+        raw = raw_funcs[ext](fpath_raw, preload=True, verbose=False)
 
         # Set channel types and select reference channels
         fpath_channels = self.io.get_filepath(suffix='channels')
