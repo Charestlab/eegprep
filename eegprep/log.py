@@ -1,3 +1,4 @@
+from mne.utils.misc import sizeof_fmt as hsize
 
 
 class Log(object):
@@ -32,11 +33,17 @@ class Log(object):
     def discovering_data(self):
         self.write('Discovering data..')
 
-    def storing_object_in_memory(self, key, obj):
-        self.write(f'Storing object in memory store as {key}: {repr(obj)}')
+    def storing_object_in_memory(self, key, obj, size, total_size):
+        self.write(
+            f'Storing object ({hsize(size)}) '
+            f'in memory store ({hsize(total_size)})'
+        )
 
-    def removing_object_from_memory(self, key, obj):
-        self.write(f'Removing object from memory known as {key}: {repr(obj)}')
+    def removing_object_from_memory(self, key, obj, size, total_size):
+        self.write(
+            f'Removing object ({hsize(size)}) '
+            f'from memory ({hsize(total_size)})'
+        )
 
     def writing_object(self, obj, fpath):
         self.write(f'Writing object to disk at {fpath}')

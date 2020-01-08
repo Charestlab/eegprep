@@ -8,13 +8,16 @@ class Memory(object):
     def __init__(self, log):
         self.objects = {}
         self.log = log
+        self.total_size = 0
 
     def get(self, key):
         return self.objects[key]
 
     def store(self, obj, **filters):
         key = frozenset(filters.items())
-        self.log.storing_object_in_memory(key, obj)
+        size = obj._size
+        self.total_size += size
+        self.log.storing_object_in_memory(key, obj, size, self.total_size)
         self.objects[key] = obj
 
     def find(self, **filters):
@@ -24,7 +27,11 @@ class Memory(object):
     def delete(self, **filters):
         selection = self.find_matching_keys(**filters)
         for k in selection:
-            self.log.removing_object_from_memory(k, self.objects[k])
+            obj = self.objects[k]
+            size = obj._size
+            self.total_size -= size
+            self.log.removing_object_from_memory(
+                k, obj, size, self.total_size)
             del self.objects[k]
 
     def find_matching_keys(self, **filters):
